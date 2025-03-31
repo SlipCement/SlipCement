@@ -145,7 +145,8 @@
 
         function updateSpeed() {
             const inputSpeed = document.getElementById('speedInput').value;
-            sortSpeed = 1000 - Math.max(1, Math.min(inputSpeed, 1000)); // Invert the logic: higher input = faster
+            sortSpeed = Math.max(1, Math.min(inputSpeed, 1000)); // Ensure speed is between 1 and 1000
+            sortSpeed = 1000 - sortSpeed; // Reverse logic: higher input = faster sort
         }
 
         window.addEventListener("keydown", function (event) {
