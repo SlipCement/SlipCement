@@ -57,12 +57,18 @@
         canvas.width = window.innerWidth * 0.9;
         canvas.height = window.innerHeight * 0.7;
 
-        const numValues = parseInt(prompt("How many random numbers to generate?"), 10) || 50;
+        let numValues = parseInt(prompt("How many random numbers to generate?"), 10);
+
+        // Error handling for invalid input
+        if (isNaN(numValues) || numValues <= 0) {
+            throw new Error("Invalid input! Please enter a positive number.");
+        }
+
         const maxValue = numValues * 10; // Maximum value scales with number of items
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
         let sorting = false;
 
-        const audio = new Audio("Chess Type Beat.mp3");
+        const audio = new Audio("Assets/Chess Type Beat.mp3");
         audio.loop = true;
         let isMuted = false;
 
