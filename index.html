@@ -56,8 +56,8 @@
         <button id="toggleMusic" onclick="toggleMusic()">Mute Music</button>
     </div>
     <div class="speed-control">
-        <label for="speedInput">Speed (ms): </label>
-        <input type="number" id="speedInput" value="5" min="1" max="1000" step="1">
+        <label for="speedInput">Speed: </label>
+        <input type="number" id="speedInput" value="995" min="1" max="999" step="1">
         <button onclick="updateSpeed()">Set Speed</button>
     </div>
 
@@ -70,7 +70,6 @@
         canvas.height = window.innerHeight * 0.7;
 
         let numValues = 0;
-
         while (numValues <= 0) {
             numValues = parseInt(prompt("How many random numbers to generate?"), 10);
             if (isNaN(numValues) || numValues <= 0) {
@@ -81,7 +80,6 @@
         const maxValue = numValues * 10;
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
         let sorting = false;
-        let sortSpeed = 5;  // Default speed
 
         const audio = new Audio("Assets/Chess Type Beat.mp3");
         audio.loop = true;
@@ -96,8 +94,10 @@
             });
         }
 
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+        function sleep() {
+            const speedValue = parseInt(document.getElementById('speedInput').value);
+            const delay = Math.max(1, 1000 - speedValue); // Higher number = faster sort
+            return new Promise(resolve => setTimeout(resolve, delay));
         }
 
         async function bubbleSort() {
@@ -108,12 +108,12 @@
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < n - i - 1; j++) {
                     drawArray(arr, [j, j + 1]);
-                    await sleep(sortSpeed);
+                    await sleep();
 
                     if (arr[j] > arr[j + 1]) {
                         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                         drawArray(arr, [j, j + 1]);
-                        await sleep(sortSpeed);
+                        await sleep();
                     }
                 }
             }
@@ -145,8 +145,8 @@
 
         function updateSpeed() {
             let inputSpeed = document.getElementById('speedInput').value;
-            inputSpeed = Math.max(1, Math.min(inputSpeed, 1000)); // Ensure it's within range
-            sortSpeed = 1000 - inputSpeed; // Reverse logic: higher input = faster sort
+            inputSpeed = Math.max(1, Math.min(inputSpeed, 999));
+            document.getElementById('speedInput').value = inputSpeed; // Clamp value
         }
 
         window.addEventListener("keydown", function (event) {
