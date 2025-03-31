@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bubble Sort Visualization</title>
+    <title>BubSorting</title>
     <style>
         * {
             margin: 0;
@@ -77,7 +77,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const barWidth = canvas.width / arr.length;
             arr.forEach((val, i) => {
-                ctx.fillStyle = highlight.includes(i) ? "red" : "blue";
+                ctx.fillStyle = highlight.includes(i) ? "red" : "green";
                 ctx.fillRect(i * barWidth, canvas.height - (val / maxValue) * canvas.height, barWidth - 2, (val / maxValue) * canvas.height);
             });
         }
