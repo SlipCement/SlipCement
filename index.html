@@ -133,7 +133,9 @@
 
         // Add event listener for "M" key press to mute/unmute the music
         window.addEventListener("keydown", function (event) {
-            if (event.key === "m" || event.key === "M") {
+            console.log(`Key pressed: ${event.key}`); // Debugging line to check key presses
+            if (event.key.toLowerCase() === "m") {
+                event.preventDefault(); // Prevent unwanted default behaviors
                 toggleMusic();
             }
         });
