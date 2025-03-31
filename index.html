@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Sort Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transform-origin: top;
+        }
+        canvas {
+            background-color: black;
+            border: 1px solid white;
+            width: 90vw;
+            height: 70vh;
+        }
+        .buttons {
+            margin-top: 10px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bubble Sort Visualization</h1>
+    <canvas id="canvas"></canvas>
+    <div class="buttons">
+        <button onclick="startSorting()">Start Sorting</button>
+        <button onclick="stopSorting()">Stop Sorting</button>
+        <button id="toggleMusic" onclick="toggleMusic()">Mute Music</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const musicButton = document.getElementById("toggleMusic");
+
+        canvas.width = window.innerWidth * 0.9;
+        canvas.height = window.innerHeight * 0.7;
+
+        const numValues = parseInt(prompt("How many random numbers to generate?"), 10) || 50;
+        const maxValue = numValues * 10; // Maximum value scales with number of items
+        let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
+        let sorting = false;
+
+        const audio = new Audio("Chess Type Beat.mp3");
+        audio.loop = true;
+        let isMuted = false;
+
+        function drawArray(arr, highlight = []) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const barWidth = canvas.width / arr.length;
+            arr.forEach((val, i) => {
+                ctx.fillStyle = highlight.includes(i) ? "red" : "green";
+                ctx.fillRect(i * barWidth, canvas.height - (val / maxValue) * canvas.height, barWidth - 2, (val / maxValue) * canvas.height);
+            });
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function bubbleSort() {
+            sorting = true;
+            if (!isMuted) audio.play();
+
+            let n = arr.length;
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    drawArray(arr, [j, j + 1]);
+                    await sleep(5);
+
+                    if (arr[j] > arr[j + 1]) {
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        drawArray(arr, [j, j + 1]);
+                        await sleep(5);
+                    }
+                }
+            }
+
+            sorting = false;
+            audio.pause();
+            drawArray(arr);
+        }
+
+        function startSorting() {
+            if (!sorting) bubbleSort();
+        }
+
+        function stopSorting() {
+            location.reload();
+        }
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                isMuted = false;
+                musicButton.textContent = "Mute Music";
+            } else {
+                audio.pause();
+                isMuted = true;
+                musicButton.textContent = "Unmute Music";
+            }
+        }
+
+        drawArray(arr);
+    </script>
+</body>
+</html>
