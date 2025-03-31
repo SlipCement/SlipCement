@@ -57,15 +57,15 @@
         canvas.width = window.innerWidth * 0.9;
         canvas.height = window.innerHeight * 0.7;
 
-        let numValues;
+        let numValues = 0;
 
-        // Prompt until a valid number is entered
-        do {
+        // Prompt until a valid positive number is entered
+        while (numValues <= 0) {
             numValues = parseInt(prompt("How many random numbers to generate?"), 10);
             if (isNaN(numValues) || numValues <= 0) {
                 alert("Invalid input! Please enter a positive number.");
             }
-        } while (isNaN(numValues) || numValues <= 0);
+        }
 
         const maxValue = numValues * 10; // Maximum value scales with number of items
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
