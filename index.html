@@ -45,7 +45,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            display: none;
+            display: block;
         }
         iframe {
             width: 100%;
@@ -87,6 +87,10 @@
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
         let sorting = false;
 
+        const audio = new Audio("Assets/Chess Type Beat.mp3");
+        audio.loop = true;
+        let isMuted = false;
+
         function drawArray(arr, highlight = []) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const barWidth = canvas.width / arr.length;
@@ -102,6 +106,7 @@
 
         async function bubbleSort() {
             sorting = true;
+            if (!isMuted) audio.play();
 
             let n = arr.length;
             for (let i = 0; i < n; i++) {
@@ -129,11 +134,21 @@
             location.reload();
         }
 
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                isMuted = false;
+            } else {
+                audio.pause();
+                isMuted = true;
+            }
+        }
+
         function setBackgroundVideo() {
             const ytUrl = document.getElementById("ytUrl").value;
             if (ytUrl) {
                 const videoId = ytUrl.split("v=")[1].split("&")[0];
-                document.getElementById("ytIframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&loop=1&mute=1&playlist=${videoId}`;
+                document.getElementById("ytIframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&loop=1&playlist=${videoId}`;
                 document.getElementById("ytVideoContainer").style.display = "block";
             }
         }
