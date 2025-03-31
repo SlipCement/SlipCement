@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BubSorting</title>
+    <title>Bubble Sort Visualization</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
         }
         canvas {
             background-color: black;
-            border: 1px black;
+            border: 1px solid white;
             width: 90vw;
             height: 70vh;
         }
@@ -38,21 +38,39 @@
             font-size: 16px;
             cursor: pointer;
         }
+        #ytVideoContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            display: none;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
     <h1>Bubble Sort Visualization</h1>
+    <input type="text" id="ytUrl" placeholder="Enter YouTube video URL">
+    <button onclick="setBackgroundVideo()">Set Background Video</button>
     <canvas id="canvas"></canvas>
     <div class="buttons">
         <button onclick="startSorting()">Start Sorting</button>
         <button onclick="stopSorting()">Stop Sorting</button>
-        <button id="toggleMusic" onclick="toggleMusic()">Mute Music</button>
+    </div>
+
+    <div id="ytVideoContainer">
+        <iframe id="ytIframe" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
     </div>
 
     <script>
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-        const musicButton = document.getElementById("toggleMusic");
 
         canvas.width = window.innerWidth * 0.9;
         canvas.height = window.innerHeight * 0.7;
@@ -69,10 +87,6 @@
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
         let sorting = false;
 
-        const audio = new Audio("Assets/Chess Type Beat.mp3");
-        audio.loop = true;
-        let isMuted = false;
-
         function drawArray(arr, highlight = []) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const barWidth = canvas.width / arr.length;
@@ -88,24 +102,22 @@
 
         async function bubbleSort() {
             sorting = true;
-            if (!isMuted) audio.play();
 
             let n = arr.length;
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < n - i - 1; j++) {
                     drawArray(arr, [j, j + 1]);
-                    await sleep(2);  // Fast sorting speed
+                    await sleep(5);
 
                     if (arr[j] > arr[j + 1]) {
                         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                         drawArray(arr, [j, j + 1]);
-                        await sleep(2);
+                        await sleep(5);
                     }
                 }
             }
 
             sorting = false;
-            audio.pause();
             drawArray(arr);
         }
 
@@ -117,24 +129,14 @@
             location.reload();
         }
 
-        function toggleMusic() {
-            if (audio.paused) {
-                audio.play();
-                isMuted = false;
-                musicButton.textContent = "Mute Music";
-            } else {
-                audio.pause();
-                isMuted = true;
-                musicButton.textContent = "Unmute Music";
+        function setBackgroundVideo() {
+            const ytUrl = document.getElementById("ytUrl").value;
+            if (ytUrl) {
+                const videoId = ytUrl.split("v=")[1].split("&")[0];
+                document.getElementById("ytIframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&loop=1&mute=1&playlist=${videoId}`;
+                document.getElementById("ytVideoContainer").style.display = "block";
             }
         }
-
-        window.addEventListener("keydown", function (event) {
-            if (event.key.toLowerCase() === "m") {
-                event.preventDefault();
-                toggleMusic();
-            }
-        });
 
         drawArray(arr);
     </script>
