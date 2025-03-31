@@ -25,7 +25,7 @@
         }
         canvas {
             background-color: black;
-            border: 1px solid white;
+            border: 1px black;
             width: 90vw;
             height: 70vh;
         }
@@ -38,13 +38,6 @@
             font-size: 16px;
             cursor: pointer;
         }
-        .speed-control {
-            margin-top: 20px;
-        }
-        #speedInput {
-            padding: 5px;
-            width: 60px;
-        }
     </style>
 </head>
 <body>
@@ -54,11 +47,6 @@
         <button onclick="startSorting()">Start Sorting</button>
         <button onclick="stopSorting()">Stop Sorting</button>
         <button id="toggleMusic" onclick="toggleMusic()">Mute Music</button>
-    </div>
-    <div class="speed-control">
-        <label for="speedInput">Speed: </label>
-        <input type="number" id="speedInput" value="995" min="1" max="999" step="1">
-        <button onclick="updateSpeed()">Set Speed</button>
     </div>
 
     <script>
@@ -89,15 +77,13 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const barWidth = canvas.width / arr.length;
             arr.forEach((val, i) => {
-                ctx.fillStyle = highlight.includes(i) ? "red" : "green";
+                ctx.fillStyle = highlight.includes(i) ? "red" : "blue";
                 ctx.fillRect(i * barWidth, canvas.height - (val / maxValue) * canvas.height, barWidth - 2, (val / maxValue) * canvas.height);
             });
         }
 
-        function sleep() {
-            const speedValue = parseInt(document.getElementById('speedInput').value);
-            const delay = Math.max(1, 1000 - speedValue); // Higher number = faster sort
-            return new Promise(resolve => setTimeout(resolve, delay));
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
         async function bubbleSort() {
@@ -108,12 +94,12 @@
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < n - i - 1; j++) {
                     drawArray(arr, [j, j + 1]);
-                    await sleep();
+                    await sleep(2);  // Fast sorting speed
 
                     if (arr[j] > arr[j + 1]) {
                         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                         drawArray(arr, [j, j + 1]);
-                        await sleep();
+                        await sleep(2);
                     }
                 }
             }
@@ -141,12 +127,6 @@
                 isMuted = true;
                 musicButton.textContent = "Unmute Music";
             }
-        }
-
-        function updateSpeed() {
-            let inputSpeed = document.getElementById('speedInput').value;
-            inputSpeed = Math.max(1, Math.min(inputSpeed, 999));
-            document.getElementById('speedInput').value = inputSpeed; // Clamp value
         }
 
         window.addEventListener("keydown", function (event) {
