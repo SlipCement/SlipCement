@@ -57,13 +57,15 @@
         canvas.width = window.innerWidth * 0.9;
         canvas.height = window.innerHeight * 0.7;
 
-        let numValues = parseInt(prompt("How many random numbers to generate?"), 10);
+        let numValues;
 
-        // Error handling for invalid input
-        if (isNaN(numValues) || numValues <= 0) {
-            alert("Invalid input! Please enter a positive number.");
-            throw new Error("Invalid input! Please enter a positive number.");
-        }
+        // Prompt until a valid number is entered
+        do {
+            numValues = parseInt(prompt("How many random numbers to generate?"), 10);
+            if (isNaN(numValues) || numValues <= 0) {
+                alert("Invalid input! Please enter a positive number.");
+            }
+        } while (isNaN(numValues) || numValues <= 0);
 
         const maxValue = numValues * 10; // Maximum value scales with number of items
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
