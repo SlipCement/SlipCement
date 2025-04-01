@@ -46,6 +46,7 @@
             height: 100%;
             z-index: -1;
             display: block;
+            opacity: 0; /* Make video invisible */
         }
         iframe {
             width: 100%;
@@ -58,7 +59,6 @@
     <h1>Bubble Sort Visualization</h1>
     <input type="text" id="ytUrl" placeholder="Enter YouTube video URL">
     <button onclick="setBackgroundVideo()">Set Background Video</button>
-    <button onclick="startMusic()">Start Music</button>
     <canvas id="canvas"></canvas>
     <div class="buttons">
         <button onclick="startSorting()">Start Sorting</button>
@@ -88,10 +88,6 @@
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
         let sorting = false;
 
-        const audio = new Audio("Assets/Chess Type Beat.mp3");
-        audio.loop = true;
-        let isMuted = false;
-
         function drawArray(arr, highlight = []) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const barWidth = canvas.width / arr.length;
@@ -107,8 +103,6 @@
 
         async function bubbleSort() {
             sorting = true;
-            if (!isMuted) audio.play();
-
             let n = arr.length;
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < n - i - 1; j++) {
@@ -133,10 +127,6 @@
 
         function stopSorting() {
             location.reload();
-        }
-
-        function startMusic() {
-            audio.play();
         }
 
         function setBackgroundVideo() {
