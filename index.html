@@ -46,7 +46,6 @@
             height: 100%;
             z-index: -1;
             display: block;
-            opacity: 0; /* Make video invisible */
         }
         iframe {
             width: 100%;
@@ -54,11 +53,13 @@
             border: none;
         }
     </style>
+    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
     <h1>Bubble Sort Visualization</h1>
     <input type="text" id="ytUrl" placeholder="Enter YouTube video URL">
     <button onclick="setBackgroundVideo()">Set Background Video</button>
+    <button onclick="startMusic()">Start Music</button>
     <canvas id="canvas"></canvas>
     <div class="buttons">
         <button onclick="startSorting()">Start Sorting</button>
@@ -70,6 +71,7 @@
     </div>
 
     <script>
+        let ytPlayer;
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 
@@ -88,6 +90,10 @@
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
         let sorting = false;
 
+        const audio = new Audio("Assets/Chess Type Beat.mp3");
+        audio.loop = true;
+        let isMuted = false;
+
         function drawArray(arr, highlight = []) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const barWidth = canvas.width / arr.length;
@@ -103,6 +109,8 @@
 
         async function bubbleSort() {
             sorting = true;
+            if (!isMuted) audio.play();
+
             let n = arr.length;
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < n - i - 1; j++) {
@@ -118,15 +126,41 @@
             }
 
             sorting = false;
+            audio.pause();
             drawArray(arr);
+            ytPlayer.stopVideo(); // Stop the video when sorting is finished
         }
 
         function startSorting() {
-            if (!sorting) bubbleSort();
+            if (!sorting) {
+                ytPlayer.playVideo(); // Start the video
+                ytPlayer.setLoop(true); // Loop the video
+                bubbleSort();
+            }
         }
 
         function stopSorting() {
+            ytPlayer.stopVideo(); // Stop the video
             location.reload();
+        }
+
+        function onYouTubePlayerAPIReady() {
+            ytPlayer = new YT.Player('ytIframe', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            ytPlayer.setLoop(true); // Set the video to loop when ready
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                ytPlayer.seekTo(0); // Restart the video from the beginning once it ends
+            }
         }
 
         function setBackgroundVideo() {
