@@ -40,12 +40,9 @@
         }
         #ytVideoContainer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            display: block;
+            width: 0;
+            height: 0;
+            overflow: hidden;
         }
         iframe {
             width: 100%;
@@ -53,25 +50,19 @@
             border: none;
         }
     </style>
-    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
     <h1>Bubble Sort Visualization</h1>
-    <input type="text" id="ytUrl" placeholder="Enter YouTube video URL">
-    <button onclick="setBackgroundVideo()">Set Background Video</button>
-    <button onclick="startMusic()">Start Music</button>
+    <input type="text" id="ytUrl" placeholder="Enter YouTube video URL (Optional)">
+    <button onclick="startSorting()">Start Sorting</button>
+    <button onclick="stopSorting()">Stop Sorting</button>
     <canvas id="canvas"></canvas>
-    <div class="buttons">
-        <button onclick="startSorting()">Start Sorting</button>
-        <button onclick="stopSorting()">Stop Sorting</button>
-    </div>
 
     <div id="ytVideoContainer">
-        <iframe id="ytIframe" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <iframe id="ytIframe" src="" frameborder="0" allow="autoplay" allowfullscreen></iframe>
     </div>
 
     <script>
-        let ytPlayer;
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 
@@ -89,10 +80,7 @@
         const maxValue = numValues * 10;
         let arr = Array.from({ length: numValues }, () => Math.floor(Math.random() * maxValue) + 1);
         let sorting = false;
-
-        const audio = new Audio("Assets/Chess Type Beat.mp3");
-        audio.loop = true;
-        let isMuted = false;
+        let ytPlaying = false;
 
         function drawArray(arr, highlight = []) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -109,7 +97,7 @@
 
         async function bubbleSort() {
             sorting = true;
-            if (!isMuted) audio.play();
+            if (ytPlaying) startMusic(); // Play music only if a video is available
 
             let n = arr.length;
             for (let i = 0; i < n; i++) {
@@ -126,50 +114,38 @@
             }
 
             sorting = false;
-            audio.pause();
+            stopMusic();
             drawArray(arr);
-            ytPlayer.stopVideo(); // Stop the video when sorting is finished
         }
 
         function startSorting() {
             if (!sorting) {
-                ytPlayer.playVideo(); // Start the video
-                ytPlayer.setLoop(true); // Loop the video
+                const ytUrl = document.getElementById("ytUrl").value;
+                if (ytUrl.trim() !== "") {  // Only process YouTube video if a link is given
+                    const videoId = ytUrl.split("v=")[1]?.split("&")[0];
+                    if (videoId) {
+                        document.getElementById("ytIframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
+                        ytPlaying = true;
+                    }
+                } else {
+                    ytPlaying = false; // No music if no link is provided
+                }
                 bubbleSort();
             }
         }
 
         function stopSorting() {
-            ytPlayer.stopVideo(); // Stop the video
             location.reload();
         }
 
-        function onYouTubePlayerAPIReady() {
-            ytPlayer = new YT.Player('ytIframe', {
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
+        function startMusic() {
+            document.getElementById("ytVideoContainer").style.width = "100px"; // Invisible but active
+            document.getElementById("ytVideoContainer").style.height = "100px";
         }
 
-        function onPlayerReady(event) {
-            ytPlayer.setLoop(true); // Set the video to loop when ready
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) {
-                ytPlayer.seekTo(0); // Restart the video from the beginning once it ends
-            }
-        }
-
-        function setBackgroundVideo() {
-            const ytUrl = document.getElementById("ytUrl").value;
-            if (ytUrl) {
-                const videoId = ytUrl.split("v=")[1].split("&")[0];
-                document.getElementById("ytIframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&loop=1&playlist=${videoId}`;
-                document.getElementById("ytVideoContainer").style.display = "block";
-            }
+        function stopMusic() {
+            document.getElementById("ytIframe").src = ""; // Stop video
+            ytPlaying = false;
         }
 
         drawArray(arr);
